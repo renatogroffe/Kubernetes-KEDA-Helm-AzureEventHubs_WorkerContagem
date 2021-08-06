@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workercontagem
+spec:
+  selector:
+    matchLabels:
+      app: workercontagem
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: workercontagem
+    spec:
+      containers:
+      - name: workercontagem
+        image: renatogroffe/workercontagemazeventhubs:1
+        env:
+        - name: AzureEventHubs__EventHub
+          value: contagem
+        - name: AzureEventHubs__ConsumerGroup
+          value: workerk8s
+        - name: AzureEventHubs__BlobContainer
+          value: hubcontagem
+        - name: AzureEventHubs__EventHubsConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: workercontagemsecret
+              key: ConnectionAzureEventHubs
+        - name: AzureEventHubs__BlobStorageConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: workercontagemsecret
+              key: ConnectionAzureStorage
+        - name: ConnectionStrings__BaseContagem
+          valueFrom:
+            secretKeyRef:
+              name: workercontagemsecret
+              key: ConnectionSqlServer
